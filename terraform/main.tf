@@ -5,7 +5,7 @@
 # =============================================================================
 # VPC CONFIGURATION
 # =============================================================================
-
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 5.0"

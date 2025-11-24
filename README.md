@@ -80,7 +80,7 @@ The application has been deliberately over-engineered to generate multiple de-co
 
 1. **Install Prerequisites**: AWS CLI, Terraform, kubectl, Docker, Helm
 2. **Configure AWS**: `aws configure` with appropriate credentials
-3. **Clone Repository**: `git clone https://github.com/LondheShubham153/retail-store-sample-app.git`
+3. **Clone Repository**: `git clone https://github.com/arumullayaswanth/k8s-microservices-ecommerce-app.git`
 4. **Deploy Infrastructure**: Run Terraform in two phases (see [Getting Started](#getting-started))
 5. **Access Application**: Get load balancer URL and browse the retail store
 
@@ -268,8 +268,8 @@ aws configure
 ### Step 2. Clone the Repository:
 
 ```sh
-git clone https://github.com/LondheShubham153/retail-store-sample-app.git
-cd retail-store-sample-app
+git clone https://github.com/arumullayaswanth/k8s-microservices-ecommerce-app.git
+cd k8s-microservices-ecommerce-app.git
 ```
 
 > [!IMPORTANT]
@@ -308,7 +308,7 @@ The deployment is split into two phases for better control:
 In Phase 1: Terraform Initialises and creates resources within the retail_app_eks module. 
 
 ```sh
-cd retail-store-sample-app/terraform/
+cd k8s-microservices-ecommerce-app.git/terraform/
 terraform init
 terraform apply -target=module.retail_app_eks -target=module.vpc --auto-approve
 ```

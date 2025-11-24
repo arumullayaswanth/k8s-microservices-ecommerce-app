@@ -4,6 +4,7 @@
 
 replicaCount: 1
 image:
+# First time I am using the public repository Later on I will change it automatically
   repository: public.ecr.aws/aws-containers/retail-store-sample-ui
   pullPolicy: Always
   tag: "1.2.2"

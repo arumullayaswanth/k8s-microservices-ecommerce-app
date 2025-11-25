@@ -1,0 +1,156 @@
+pipeline {
+    agent any
+
+    parameters {
+        choice(
+            name: 'ACTION',
+            choices: ['apply', 'destroy'],
+            description: '🔧 Select the Terraform action to perform'
+        )
+    }
+
+    stages {
+
+        stage('Checkout from Git') {
+            steps {
+                echo 'Checking out Git repository...'
+                checkout scm
+            }
+        }
+
+        stage('Upgrade AWS CLI, kubectl, Terraform') {
+            steps {
+                sh '''
+                    echo "==== Upgrading AWS CLI ===="
+                    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+                    unzip -o awscliv2.zip
+                    sudo ./aws/install --update
+
+                    echo "==== Upgrading kubectl ===="
+                    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+                    chmod +x kubectl
+                    sudo mv kubectl /usr/local/bin/
+
+                    echo "==== Upgrading Terraform ===="
+                    LATEST_TF=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r .current_version)
+                    curl -Lo terraform.zip "https://releases.hashicorp.com/terraform/${LATEST_TF}/terraform_${LATEST_TF}_linux_amd64.zip"
+                    unzip -o terraform.zip
+                    sudo mv terraform /usr/local/bin/terraform
+                    terraform --version
+
+                    echo "==== Versions After Upgrade ===="
+                    aws --version
+                    kubectl version --client --short
+                    terraform --version
+                '''
+            }
+        }
+
+        stage('Terraform version') {
+            steps {
+                sh 'terraform --version'
+            }
+        }
+
+        stage('Terraform init') {
+            steps {
+                dir('terraform') {
+                    sh 'terraform init --reconfigure'
+                }
+            }
+        }
+
+        stage('Terraform validate') {
+            steps {
+                dir('terraform') { 
+                    sh 'terraform validate'
+                }
+            }
+        }
+
+        stage('Terraform plan') {
+            steps {
+                dir('terraform') {
+                    sh 'terraform plan'
+                }
+            }
+        }
+
+        /* ---------------- APPLY LOGIC ---------------- */
+        stage('Targeted Apply: VPC') {
+            when {
+                expression { params.ACTION == 'apply' }
+            }
+            steps {
+                dir('terraform') {
+                    sh '''
+                        terraform init
+                        terraform apply -target=module.vpc -auto-approve
+                    '''
+                }
+            }
+        }
+
+        stage('Targeted Apply: EKS Cluster') {
+            when {
+                expression { params.ACTION == 'apply' }
+            }
+            steps {
+                dir('terraform') {
+                    sh '''
+                        terraform init
+                        terraform apply -target=module.retail_app_eks -auto-approve
+                    '''
+                }
+            }
+        }
+
+        stage('Update kubeconfig') {
+            when {
+                expression { params.ACTION == 'apply' }
+            }
+            steps {
+                dir('terraform') {
+                    script {
+                        def eks_name = sh(
+                            script: "terraform output -raw eks_cluster_name",
+                            returnStdout: true
+                        ).trim()
+
+                        sh "aws eks update-kubeconfig --region us-west-2 --name ${eks_name}"
+                    }
+                }
+            }
+        }
+
+        stage('Final Apply') {
+            when {
+                expression { params.ACTION == 'apply' }
+            }
+            steps {
+                dir('terraform') {
+                    sh '''
+                        terraform init
+                        terraform plan
+                        terraform apply -auto-approve
+                    '''
+                }
+            }
+        }
+
+        /* ---------------- DESTROY LOGIC ---------------- */
+        stage('Terraform destroy') {
+            when {
+                expression { params.ACTION == 'destroy' }
+            }
+            steps {
+                dir('terraform') {
+                    sh '''
+                        terraform init
+                        terraform destroy -auto-approve
+                    '''
+                }
+            }
+        }
+    }
+}

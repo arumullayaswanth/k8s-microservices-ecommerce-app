@@ -51,9 +51,9 @@ variable "enable_single_nat_gateway" {
 }
 
 variable "enable_monitoring" {
-  description = "Enable monitoring stack (Prometheus, Grafana)"
+  description = "Enable monitoring stack (Prometheus, Grafana) with LoadBalancer access"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "enable_aws_lb_controller" {

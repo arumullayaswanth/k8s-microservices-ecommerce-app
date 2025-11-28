@@ -129,3 +129,58 @@ output "useful_commands" {
     describe_cluster = "kubectl cluster-info"
   }
 }
+
+# =============================================================================
+# MONITORING OUTPUTS
+# =============================================================================
+
+output "monitoring_enabled" {
+  description = "Whether monitoring stack is enabled"
+  value       = var.enable_monitoring
+}
+
+output "prometheus_loadbalancer_command" {
+  description = "Command to get Prometheus LoadBalancer URL"
+  value       = var.enable_monitoring ? "kubectl get svc -n monitoring kube-prometheus-stack-prometheus -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'" : "Monitoring not enabled. Set enable_monitoring=true"
+}
+
+output "grafana_loadbalancer_command" {
+  description = "Command to get Grafana LoadBalancer URL"
+  value       = var.enable_monitoring ? "kubectl get svc -n monitoring kube-prometheus-stack-grafana -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'" : "Monitoring not enabled. Set enable_monitoring=true"
+}
+
+output "grafana_url_command" {
+  description = "Command to get the full Grafana URL"
+  value       = var.enable_monitoring ? "echo 'http://'$(kubectl get svc -n monitoring kube-prometheus-stack-grafana -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')" : "Monitoring not enabled"
+}
+
+output "prometheus_url_command" {
+  description = "Command to get the full Prometheus URL"
+  value       = var.enable_monitoring ? "echo 'http://'$(kubectl get svc -n monitoring kube-prometheus-stack-prometheus -o jsonpath='{.status.loadBalancer.ingress[0].hostname}':9090)" : "Monitoring not enabled"
+}
+
+output "grafana_credentials" {
+  description = "Grafana login credentials"
+  value       = var.enable_monitoring ? "Username: admin | Password: admin123 (CHANGE THIS IN PRODUCTION!)" : "Monitoring not enabled"
+}
+
+output "load_balancer_names" {
+  description = "AWS Load Balancer names for easy identification in AWS Console"
+  value = {
+    argocd       = "${var.cluster_name}-argocd-server"
+    ingress      = "Managed by ingress-nginx (check EC2 > Load Balancers)"
+    prometheus   = var.enable_monitoring ? "${var.cluster_name}-prometheus" : "Not enabled"
+    grafana      = var.enable_monitoring ? "${var.cluster_name}-grafana" : "Not enabled"
+    alertmanager = var.enable_monitoring ? "${var.cluster_name}-alertmanager" : "Not enabled"
+  }
+}
+
+output "monitoring_commands" {
+  description = "Useful commands for monitoring stack"
+  value = var.enable_monitoring ? {
+    get_monitoring_pods     = "kubectl get pods -n monitoring"
+    get_monitoring_services = "kubectl get svc -n monitoring"
+    port_forward_grafana    = "kubectl port-forward -n monitoring svc/kube-prometheus-stack-grafana 3000:80"
+    port_forward_prometheus = "kubectl port-forward -n monitoring svc/kube-prometheus-stack-prometheus 9090:9090"
+  } : {}
+}

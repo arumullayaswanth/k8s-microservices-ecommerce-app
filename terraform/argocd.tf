@@ -25,6 +25,14 @@ resource "helm_release" "argocd" {
   chart      = "argo-cd"
   version    = var.argocd_chart_version
 
+  # Cleanup settings for reliable destroy
+  cleanup_on_fail = true
+  wait            = true
+  timeout         = 600
+
+  # Ensure clean destroy
+  wait_for_jobs = false
+
   # ArgoCD configuration values
   values = [
     yamlencode({
@@ -101,11 +109,23 @@ resource "helm_release" "argocd" {
 resource "kubectl_manifest" "argocd_projects" {
   for_each   = fileset("${path.module}/../argocd/projects", "*.yaml")
   yaml_body  = file("${path.module}/../argocd/projects/${each.value}")
+  
+  # Force delete on destroy to avoid hanging
+  force_conflicts   = true
+  server_side_apply = true
+  wait              = true
+  
   depends_on = [helm_release.argocd]
 }
 
 resource "kubectl_manifest" "argocd_apps" {
   for_each   = fileset("${path.module}/../argocd/applications", "*.yaml")
   yaml_body  = file("${path.module}/../argocd/applications/${each.value}")
+  
+  # Force delete on destroy to avoid hanging
+  force_conflicts   = true
+  server_side_apply = true
+  wait              = true
+  
   depends_on = [kubectl_manifest.argocd_projects]
 }

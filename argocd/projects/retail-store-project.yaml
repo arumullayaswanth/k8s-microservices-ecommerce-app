@@ -5,40 +5,40 @@ metadata:
   namespace: argocd
 spec:
   description: Retail Store Sample Application
-  
+
   sourceRepos:
-    - 'https://github.com/LondheShubham153/retail-store-sample-app'
-  
+    - "https://github.com/arumullayaswanth/k8s-microservices-ecommerce-app"
+
   destinations:
     - namespace: retail-store
       server: https://kubernetes.default.svc
-  
+
   clusterResourceWhitelist:
-    - group: ''
+    - group: ""
       kind: Namespace
-    - group: 'rbac.authorization.k8s.io'
+    - group: "rbac.authorization.k8s.io"
       kind: ClusterRole
-    - group: 'rbac.authorization.k8s.io'
+    - group: "rbac.authorization.k8s.io"
       kind: ClusterRoleBinding
-    - group: 'cert-manager.io'
+    - group: "cert-manager.io"
       kind: ClusterIssuer
-  
+
   namespaceResourceWhitelist:
-    - group: ''
+    - group: ""
       kind: ConfigMap
-    - group: ''
+    - group: ""
       kind: Secret
-    - group: ''
+    - group: ""
       kind: Service
-    - group: ''
+    - group: ""
       kind: ServiceAccount
-    - group: 'apps'
+    - group: "apps"
       kind: Deployment
-    - group: 'apps'
+    - group: "apps"
       kind: StatefulSet
-    - group: 'networking.k8s.io'
+    - group: "networking.k8s.io"
       kind: Ingress
-    - group: 'autoscaling'
+    - group: "autoscaling"
       kind: HorizontalPodAutoscaler
-    - group: 'policy'
-      kind: PodDisruptionBudget 
+    - group: "policy"
+      kind: PodDisruptionBudget

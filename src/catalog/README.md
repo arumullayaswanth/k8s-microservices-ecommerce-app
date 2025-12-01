@@ -1,4 +1,4 @@
-# AWS Containers Retail Sample - Catalog Service
+# AWS Containers Retail Sample - Catalog Service 
 
 <!-- Test commit -->
 

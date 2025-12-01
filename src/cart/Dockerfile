@@ -1,5 +1,5 @@
 # Build Stage
-FROM public.ecr.aws/amazonlinux/amazonlinux:2023 as build-env
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023 AS build-env
 
 # We tell DNF not to install Recommends and Suggests packages, keeping our
 # installed set of packages as minimal as possible.
@@ -21,11 +21,11 @@ COPY .mvn .mvn
 COPY mvnw .
 COPY pom.xml .
 
-RUN ./mvnw dependency:go-offline -B -q
+RUN sed -i 's/\r$//' ./mvnw && chmod +x ./mvnw && ./mvnw dependency:go-offline -B -q
 
 COPY ./src ./src
 
-RUN ./mvnw -DskipTests package -q && \
+RUN sed -i 's/\r$//' ./mvnw && chmod +x ./mvnw && ./mvnw -DskipTests package -q && \
     mv /target/carts-0.0.1-SNAPSHOT.jar /app.jar
 
 # Package Stage

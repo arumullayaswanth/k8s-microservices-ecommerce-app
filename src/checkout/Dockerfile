@@ -2,7 +2,7 @@ FROM node:20-alpine AS build
 WORKDIR /usr/src/app
 COPY --chown=node:node package*.json ./
 COPY --chown=node:node . .
-RUN yarn install --frozen-lockfile
+RUN yarn install --frozen-lockfile --network-timeout 300000
 RUN yarn build
 USER node
 

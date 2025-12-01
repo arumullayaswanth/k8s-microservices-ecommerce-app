@@ -4,9 +4,9 @@
 
 replicaCount: 1
 image:
-  repository: 626072240565.dkr.ecr.us-west-2.amazonaws.com/retail-store-orders
+  repository: 884394270268.dkr.ecr.us-west-2.amazonaws.com/retail-store-orders
   pullPolicy: Always
-  tag: "db791a4"
+  tag: "739e2e2"
 imagePullSecrets:
   - name: regcred
 nameOverride: ""

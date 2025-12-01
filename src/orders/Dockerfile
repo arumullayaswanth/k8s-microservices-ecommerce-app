@@ -21,11 +21,11 @@ COPY .mvn .mvn
 COPY mvnw .
 COPY pom.xml .
 
-RUN ./mvnw dependency:go-offline -B -q
+RUN sed -i 's/\r$//' ./mvnw && chmod +x ./mvnw && ./mvnw dependency:go-offline -B -q
 
 COPY ./src ./src
 
-RUN ./mvnw -DskipTests package -q && \
+RUN sed -i 's/\r$//' ./mvnw && chmod +x ./mvnw && ./mvnw -DskipTests package -q && \
     mv /target/orders-0.0.1-SNAPSHOT.jar /app.jar
 
 # Package Stage

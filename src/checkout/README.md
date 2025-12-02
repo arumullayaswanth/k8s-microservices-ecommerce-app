@@ -1,6 +1,6 @@
 # AWS Containers Retail Sample - Checkout Service
 <!-- Test commit -->
-
+<!--gitops-->
 | Language | Persistence |
 | -------- | ----------- |
 | Node     | Redis       |

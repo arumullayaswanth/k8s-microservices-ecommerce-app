@@ -159,6 +159,16 @@ output "prometheus_url_command" {
   value       = var.enable_monitoring ? "echo 'http://'$(kubectl get svc -n monitoring kube-prometheus-stack-prometheus -o jsonpath='{.status.loadBalancer.ingress[0].hostname}':9090)" : "Monitoring not enabled"
 }
 
+output "alertmanager_loadbalancer_command" {
+  description = "Command to get Alertmanager LoadBalancer URL"
+  value       = var.enable_monitoring ? "kubectl get svc -n monitoring kube-prometheus-stack-alertmanager -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'" : "Monitoring not enabled. Set enable_monitoring=true"
+}
+
+output "alertmanager_url_command" {
+  description = "Command to get the full Alertmanager URL"
+  value       = var.enable_monitoring ? "echo 'http://'$(kubectl get svc -n monitoring kube-prometheus-stack-alertmanager -o jsonpath='{.status.loadBalancer.ingress[0].hostname}':9093)" : "Monitoring not enabled"
+}
+
 output "grafana_credentials" {
   description = "Grafana login credentials"
   value       = var.enable_monitoring ? "Username: admin | Password: admin123 (CHANGE THIS IN PRODUCTION!)" : "Monitoring not enabled"

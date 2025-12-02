@@ -1,5 +1,5 @@
 # AWS Containers Retail Sample - Cart Service 
-<!-- gitops commit -->
+<!-- gitops commit --> 
 <!-- Test commit -->
 
 | Language | Persistence     |

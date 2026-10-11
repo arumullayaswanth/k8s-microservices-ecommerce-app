@@ -46,7 +46,7 @@ resource "helm_release" "ingress_nginx" {
 
   # Cleanup settings for reliable destroy
   cleanup_on_fail = true
-  wait            = true
+  wait            = false
   timeout         = 600
 
   # Ensure clean destroy
